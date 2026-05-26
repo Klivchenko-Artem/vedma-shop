@@ -1,0 +1,226 @@
+// === Переменные ===
+$color-primary: #2d4a2d;       // Тёмно-зелёный
+$color-primary-light: #3d6b3d; // Зелёный посветлее
+$color-accent: #c4a0a0;        // Пепельная роза
+$color-accent-light: #d4b5b5;  // Пепельная роза светлая
+$color-dark: #333333;          // Графит
+$color-text: #2c2c2c;          // Основной текст
+$color-text-light: #777777;    // Лёгкий текст
+$color-bg: #fafafa;            // Фон
+$color-bg-dark: #1a1a1a;       // Тёмный фон (футер)
+$color-white: #ffffff;
+$color-border: #e5e5e5;
+$color-glow: rgba(45, 74, 45, 0.4); // Свечение зелёным
+
+$font-primary: 'Inter', 'Nunito', sans-serif;
+
+$breakpoint-mobile: 576px;
+$breakpoint-tablet: 768px;
+$breakpoint-laptop: 1024px;
+$breakpoint-desktop: 1280px;
+
+// === Сброс ===
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    font-family: $font-primary;
+    color: $color-text;
+    background: $color-bg;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s ease;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+input, textarea, select {
+    font-family: inherit;
+    font-size: inherit;
+    outline: none;
+}
+
+// === Общие утилиты ===
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 clamp(16px, 4vw, 40px);
+}
+
+.section {
+    padding: clamp(40px, 8vw, 100px) 0;
+}
+
+.section-title {
+    font-size: clamp(24px, 4vw, 42px);
+    font-weight: 700;
+    color: $color-dark;
+    text-align: center;
+    margin-bottom: clamp(24px, 4vw, 48px);
+}
+
+.section-subtitle {
+    font-size: clamp(14px, 1.5vw, 18px);
+    color: $color-text-light;
+    text-align: center;
+    max-width: 600px;
+    margin: -20px auto 40px;
+}
+
+// === Кнопки ===
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+
+    &--primary {
+        background: $color-primary;
+        color: $color-white;
+
+        &:hover {
+            background: $color-primary-light;
+            box-shadow: 0 4px 20px $color-glow;
+        }
+    }
+
+    &--secondary {
+        background: transparent;
+        color: $color-primary;
+        border: 1px solid $color-primary;
+
+        &:hover {
+            background: $color-primary;
+            color: $color-white;
+        }
+    }
+
+    &--accent {
+        background: $color-accent;
+        color: $color-white;
+
+        &:hover {
+            background: $color-accent-light;
+        }
+    }
+
+    &--small {
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+
+    &--full {
+        width: 100%;
+    }
+}
+
+// === Анимации появления ===
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+// === Магические линии (паутина) ===
+.magic-line {
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            $color-border 20%,
+            $color-accent 50%,
+            $color-border 80%,
+            transparent 100%
+        );
+        opacity: 0.5;
+    }
+}
+
+// === Скроллбар ===
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: $color-bg;
+}
+
+::-webkit-scrollbar-thumb {
+    background: $color-accent;
+    border-radius: 3px;
+}
+
+// === Адаптив ===
+@mixin mobile {
+    @media (max-width: $breakpoint-mobile) { @content; }
+}
+
+@mixin tablet {
+    @media (max-width: $breakpoint-tablet) { @content; }
+}
+
+@mixin laptop {
+    @media (max-width: $breakpoint-laptop) { @content; }
+}
