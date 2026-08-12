@@ -34,10 +34,13 @@ function closeCart() {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    background: #0c0709;
 
     &__content {
         flex: 1;
-        padding-top: 72px; // высота фиксированного хедера
+        display: flex;
+        flex-direction: column;
+        padding-top: 72px;
     }
 }
 </style>

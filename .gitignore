@@ -24,3 +24,7 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /.osp/
+
+# Локальная БД
+/database/*.sqlite
+/database/*.sqlite-journal

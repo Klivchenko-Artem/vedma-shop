@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import { Head } from '@inertiajs/vue3';
 
 defineProps({
     images: Array,
@@ -32,17 +33,29 @@ function prevImage(total) {
     modalIndex.value = (modalIndex.value - 1 + total) % total;
 }
 
-function getColor(i) {
-    const colors = ['#e8ddd5', '#d5dde8', '#dde8d5', '#e8d5dd', '#d5e8dd', '#e0d8e8', '#ddd5e8', '#e8e5d5', '#d5e8e0', '#e8d5d5', '#e0e8d5', '#d8e0e8'];
-    return colors[i % colors.length];
+const gradients = [
+    'linear-gradient(135deg, #7a1220, #6b4c82)',
+    'linear-gradient(135deg, #4f0a12, #c9a15a)',
+    'linear-gradient(135deg, #6b4c82, #7a1220)',
+    'linear-gradient(135deg, #c9a15a, #4f0a12)',
+];
+
+function getGradient(i) {
+    return gradients[i % gradients.length];
 }
 </script>
 
 <template>
+    <Head>
+        <title>Галерея работ — фото букетов | Ведьмина метла, Таганрог</title>
+        <meta name="description" content="Фото букетов и композиций от цветочного салона «Ведьмина метла» в Таганроге. Смотрите наши работы." />
+    </Head>
     <div class="gallery-page section">
         <div class="container">
-            <h1 class="section-title">Галерея</h1>
-            <p class="section-subtitle">Наши лучшие работы и авторские композиции</p>
+            <div class="section-head">
+                <span class="eyebrow" style="color: #7a1220;">наши работы</span>
+                <h3 class="gallery-page__title">Галерея</h3>
+            </div>
 
             <div class="gallery-page__grid">
                 <div
@@ -53,8 +66,8 @@ function getColor(i) {
                     @click="openModal(i)"
                 >
                     <div class="gallery-page__image">
-                        <div class="gallery-page__placeholder" :style="{ backgroundColor: getColor(i) }">
-                            <span class="gallery-page__emoji">🌺</span>
+                        <div class="gallery-page__placeholder" :style="{ background: getGradient(i) }">
+                            <span class="gallery-page__emoji">&#x1F490;</span>
                         </div>
                         <img
                             v-if="imageUrl(img.image)"
@@ -64,11 +77,7 @@ function getColor(i) {
                             @load="$event.target.classList.add('--loaded')"
                             @error="$event.target.style.display = 'none'"
                         />
-                        <div class="gallery-page__overlay">
-                            <span class="gallery-page__zoom">🔍</span>
-                        </div>
                     </div>
-                    <span v-if="img.title" class="gallery-page__caption">{{ img.title }}</span>
                 </div>
             </div>
         </div>
@@ -77,16 +86,11 @@ function getColor(i) {
         <Transition name="modal">
             <div v-if="isModalOpen" class="gallery-modal" @click.self="closeModal">
                 <div class="gallery-modal__content">
-                    <button class="gallery-modal__close" @click="closeModal">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18" />
-                            <line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
-                    </button>
+                    <span class="gallery-modal__close" @click="closeModal">&#x2715;</span>
 
                     <div class="gallery-modal__image">
-                        <div class="gallery-modal__placeholder" :style="{ backgroundColor: getColor(modalIndex) }">
-                            <span>🌺</span>
+                        <div class="gallery-modal__placeholder" :style="{ background: getGradient(modalIndex) }">
+                            <span>&#x1F490;</span>
                         </div>
                         <img
                             v-if="imageUrl(images[modalIndex]?.image)"
@@ -99,18 +103,14 @@ function getColor(i) {
                         />
                     </div>
 
-                    <p v-if="images[modalIndex]?.title" class="gallery-modal__title">
-                        {{ images[modalIndex].title }}
-                    </p>
-
                     <div class="gallery-modal__nav">
-                        <button @click="prevImage(images.length)">
+                        <button class="gallery-modal__arrow" @click="prevImage(images.length)">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="15 18 9 12 15 6"/>
                             </svg>
                         </button>
                         <span class="gallery-modal__counter">{{ modalIndex + 1 }} / {{ images.length }}</span>
-                        <button @click="nextImage(images.length)">
+                        <button class="gallery-modal__arrow" @click="nextImage(images.length)">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="9 18 15 12 9 6"/>
                             </svg>
@@ -123,21 +123,34 @@ function getColor(i) {
 </template>
 
 <style lang="scss">
-$color-primary: #2d4a2d;
-$color-accent: #c4a0a0;
-$color-white: #ffffff;
+$parchment: #f4ead9;
+$ink: #1c1114;
+$wine: #7a1220;
+$gold: #c9a15a;
 
 .gallery-page {
+    background: $parchment;
+    padding: 60px 40px;
+    color: $ink;
+    flex: 1;
+
+    @media (max-width: 768px) {
+        padding: 32px 16px;
+    }
+
+    &__title {
+        font-size: clamp(28px, 4vw, 34px);
+        color: $ink;
+        text-align: center;
+    }
+
     &__grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 16px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-top: 30px;
 
-        @media (max-width: 1024px) {
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             grid-template-columns: repeat(2, 1fr);
         }
 
@@ -153,7 +166,7 @@ $color-white: #ffffff;
     &__image {
         position: relative;
         aspect-ratio: 1;
-        border-radius: 8px;
+        border-radius: 10px;
         overflow: hidden;
         transition: transform 0.4s ease;
 
@@ -171,13 +184,17 @@ $color-white: #ffffff;
         z-index: 1;
     }
 
+    &__emoji {
+        font-size: 48px;
+        color: #fff;
+    }
+
     &__img {
         position: absolute;
         inset: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
-        display: block;
         opacity: 0;
         transition: opacity 0.4s ease;
         z-index: 2;
@@ -186,80 +203,52 @@ $color-white: #ffffff;
             opacity: 1;
         }
     }
-
-    &__emoji {
-        font-size: 48px;
-        opacity: 0.5;
-    }
-
-    &__overlay {
-        position: absolute;
-        inset: 0;
-        background: rgba($color-primary, 0);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background 0.3s ease;
-        z-index: 3;
-
-        .gallery-page__item:hover & {
-            background: rgba($color-primary, 0.3);
-        }
-    }
-
-    &__zoom {
-        font-size: 28px;
-        opacity: 0;
-        transform: scale(0.8);
-        transition: all 0.3s ease;
-
-        .gallery-page__item:hover & {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-
-    &__caption {
-        display: block;
-        font-size: 13px;
-        color: #777;
-        margin-top: 8px;
-        text-align: center;
-    }
 }
 
 .gallery-modal {
     position: fixed;
     inset: 0;
     z-index: 300;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(10, 6, 7, 0.94);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: 40px;
 
     &__content {
         position: relative;
-        max-width: 700px;
+        max-width: 680px;
         width: 100%;
+        text-align: center;
     }
 
     &__close {
         position: absolute;
-        top: -48px;
+        top: -40px;
         right: 0;
-        color: rgba($color-white, 0.6);
-        transition: color 0.3s ease;
+        font-size: 22px;
+        color: #fff;
+        cursor: pointer;
         z-index: 10;
+        transition: opacity 0.3s ease;
 
-        &:hover { color: $color-white; }
+        &:hover {
+            opacity: 0.7;
+        }
     }
 
     &__image {
         position: relative;
-        border-radius: 8px;
-        overflow: hidden;
+        width: 100%;
+        max-width: 680px;
         aspect-ratio: 1;
+        margin: 0 auto;
+        border-radius: 10px;
+        overflow: hidden;
+
+        @media (max-width: 480px) {
+            max-width: 100%;
+        }
     }
 
     &__placeholder {
@@ -269,7 +258,6 @@ $color-white: #ffffff;
         align-items: center;
         justify-content: center;
         font-size: 80px;
-        opacity: 0.6;
         z-index: 1;
     }
 
@@ -279,7 +267,6 @@ $color-white: #ffffff;
         width: 100%;
         height: 100%;
         object-fit: contain;
-        display: block;
         opacity: 0;
         transition: opacity 0.4s ease;
         z-index: 2;
@@ -289,29 +276,34 @@ $color-white: #ffffff;
         }
     }
 
-    &__title {
-        text-align: center;
-        color: rgba($color-white, 0.7);
-        font-size: 16px;
-        margin-top: 16px;
-    }
-
     &__nav {
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 24px;
-        margin-top: 16px;
+        margin-top: 20px;
+    }
 
-        button {
-            color: rgba($color-white, 0.5);
-            transition: color 0.3s ease;
-            &:hover { color: $color-white; }
+    &__arrow {
+        width: 44px;
+        height: 44px;
+        border: 1px solid $gold;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: $gold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background: $gold;
+            color: #150d10;
         }
     }
 
     &__counter {
-        color: rgba($color-white, 0.5);
+        color: rgba(255, 255, 255, 0.5);
         font-size: 14px;
     }
 }

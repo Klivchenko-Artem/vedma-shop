@@ -1,18 +1,19 @@
-// === Переменные ===
-$color-primary: #2d4a2d;       // Тёмно-зелёный
-$color-primary-light: #3d6b3d; // Зелёный посветлее
-$color-accent: #c4a0a0;        // Пепельная роза
-$color-accent-light: #d4b5b5;  // Пепельная роза светлая
-$color-dark: #333333;          // Графит
-$color-text: #2c2c2c;          // Основной текст
-$color-text-light: #777777;    // Лёгкий текст
-$color-bg: #fafafa;            // Фон
-$color-bg-dark: #1a1a1a;       // Тёмный фон (футер)
-$color-white: #ffffff;
-$color-border: #e5e5e5;
-$color-glow: rgba(45, 74, 45, 0.4); // Свечение зелёным
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Caveat:wght@600&family=Work+Sans:wght@400;500;600&display=swap');
 
-$font-primary: 'Inter', 'Nunito', sans-serif;
+// === Переменные ===
+$ink: #1c1114;
+$night: #150d10;
+$wine: #7a1220;
+$wine-deep: #4f0a12;
+$parchment: #f4ead9;
+$parchment-dim: #e9dcc4;
+$gold: #c9a15a;
+$violet: #6b4c82;
+$white: #ffffff;
+
+$font-heading: 'Cormorant Garamond', serif;
+$font-cursive: 'Caveat', cursive;
+$font-body: 'Work Sans', sans-serif;
 
 $breakpoint-mobile: 576px;
 $breakpoint-tablet: 768px;
@@ -32,12 +33,17 @@ html {
 }
 
 body {
-    font-family: $font-primary;
-    color: $color-text;
-    background: $color-bg;
+    font-family: $font-body;
+    color: $parchment;
+    background: #0c0709;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4 {
+    font-family: $font-heading;
+    font-weight: 700;
 }
 
 a {
@@ -70,31 +76,38 @@ input, textarea, select {
     outline: none;
 }
 
-// === Общие утилиты ===
+// === Утилиты ===
+.eyebrow {
+    font-family: $font-cursive;
+    font-size: 22px;
+    color: $gold;
+}
+
 .container {
-    max-width: 1280px;
+    max-width: 1100px;
     margin: 0 auto;
     padding: 0 clamp(16px, 4vw, 40px);
 }
 
 .section {
-    padding: clamp(40px, 8vw, 100px) 0;
+    padding: clamp(40px, 8vw, 80px) 0;
 }
 
 .section-title {
-    font-size: clamp(24px, 4vw, 42px);
+    font-family: $font-heading;
+    font-size: clamp(28px, 4vw, 34px);
     font-weight: 700;
-    color: $color-dark;
+    color: $parchment;
     text-align: center;
-    margin-bottom: clamp(24px, 4vw, 48px);
+    margin-bottom: clamp(8px, 2vw, 12px);
 }
 
 .section-subtitle {
-    font-size: clamp(14px, 1.5vw, 18px);
-    color: $color-text-light;
+    font-size: clamp(14px, 1.5vw, 16px);
+    color: #a89a95;
     text-align: center;
     max-width: 600px;
-    margin: -20px auto 40px;
+    margin: 0 auto 40px;
 }
 
 // === Кнопки ===
@@ -103,41 +116,44 @@ input, textarea, select {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 12px 28px;
-    border-radius: 4px;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 14px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
+    letter-spacing: 0.03em;
     transition: all 0.3s ease;
 
     &--primary {
-        background: $color-primary;
-        color: $color-white;
+        background: $gold;
+        color: $night;
+        padding: 14px 30px;
+        border-radius: 40px;
 
         &:hover {
-            background: $color-primary-light;
-            box-shadow: 0 4px 20px $color-glow;
+            background: lighten($gold, 8%);
+            box-shadow: 0 4px 20px rgba($gold, 0.3);
+        }
+    }
+
+    &--wine {
+        background: $wine;
+        color: $white;
+        padding: 14px 30px;
+        border-radius: 30px;
+
+        &:hover {
+            background: lighten($wine, 8%);
         }
     }
 
     &--secondary {
         background: transparent;
-        color: $color-primary;
-        border: 1px solid $color-primary;
+        color: $gold;
+        border: 1px solid $gold;
+        padding: 12px 28px;
+        border-radius: 30px;
 
         &:hover {
-            background: $color-primary;
-            color: $color-white;
-        }
-    }
-
-    &--accent {
-        background: $color-accent;
-        color: $color-white;
-
-        &:hover {
-            background: $color-accent-light;
+            background: $gold;
+            color: $night;
         }
     }
 
@@ -151,7 +167,7 @@ input, textarea, select {
     }
 }
 
-// === Анимации появления ===
+// === Анимации ===
 .fade-in {
     opacity: 0;
     transform: translateY(20px);
@@ -170,49 +186,21 @@ input, textarea, select {
     to { opacity: 1; }
 }
 
-@keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-}
-
-// === Магические линии (паутина) ===
-.magic-line {
-    position: relative;
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(
-            90deg,
-            transparent 0%,
-            $color-border 20%,
-            $color-accent 50%,
-            $color-border 80%,
-            transparent 100%
-        );
-        opacity: 0.5;
-    }
-}
-
 // === Скроллбар ===
 ::-webkit-scrollbar {
     width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: $color-bg;
+    background: $night;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: $color-accent;
+    background: $wine;
     border-radius: 3px;
 }
 
-// === Адаптив ===
+// === Миксины ===
 @mixin mobile {
     @media (max-width: $breakpoint-mobile) { @content; }
 }

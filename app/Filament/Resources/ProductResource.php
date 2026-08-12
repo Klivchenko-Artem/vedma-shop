@@ -25,12 +25,6 @@ class ProductResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('Основное')->schema([
-                    Forms\Components\Select::make('category_id')
-                        ->label('Категория')
-                        ->relationship('category', 'name')
-                        ->required()
-                        ->searchable()
-                        ->preload(),
                     Forms\Components\TextInput::make('name')
                         ->label('Название')
                         ->required()
@@ -92,9 +86,6 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('category.name')
-                    ->label('Категория')
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Название')
                     ->searchable(),
@@ -116,9 +107,6 @@ class ProductResource extends Resource
             ])
             ->defaultSort('sort_order')
             ->filters([
-                Tables\Filters\SelectFilter::make('category_id')
-                    ->label('Категория')
-                    ->relationship('category', 'name'),
                 Tables\Filters\TernaryFilter::make('is_popular')
                     ->label('Популярные'),
             ])

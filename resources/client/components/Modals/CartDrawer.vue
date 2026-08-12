@@ -10,7 +10,6 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 const { items, totalCount, totalPrice, incrementItem, decrementItem, removeItem, clearCart } = useCart();
 
-// Форма заказа
 const showOrderForm = ref(false);
 const orderSuccess = ref(false);
 const isSubmitting = ref(false);
@@ -58,7 +57,6 @@ function submitOrder() {
     });
 }
 
-// Закрываем форму при закрытии дровера
 watch(() => props.isOpen, (val) => {
     if (!val) {
         showOrderForm.value = false;
@@ -66,15 +64,18 @@ watch(() => props.isOpen, (val) => {
     }
 });
 
-// Блокируем скролл при открытии
 watch(() => props.isOpen, (val) => {
     document.body.style.overflow = val ? 'hidden' : '';
 });
 
-// Цвет-заглушка
-function getColor(id) {
-    const colors = ['#e8ddd5', '#d5dde8', '#dde8d5', '#e8d5dd', '#d5e8dd', '#e0d8e8'];
-    return colors[id % colors.length];
+function getGradient(id) {
+    const gradients = [
+        'linear-gradient(135deg, #7a1220, #6b4c82)',
+        'linear-gradient(135deg, #4f0a12, #c9a15a)',
+        'linear-gradient(135deg, #6b4c82, #7a1220)',
+        'linear-gradient(135deg, #c9a15a, #4f0a12)',
+    ];
+    return gradients[id % gradients.length];
 }
 </script>
 
@@ -85,10 +86,7 @@ function getColor(id) {
             <div class="cart-drawer__panel">
                 <!-- Шапка -->
                 <div class="cart-drawer__header">
-                    <h3 class="cart-drawer__title">
-                        Корзина
-                        <span v-if="totalCount > 0" class="cart-drawer__count">({{ totalCount }})</span>
-                    </h3>
+                    <h4 class="cart-drawer__title">Корзина</h4>
                     <button class="cart-drawer__close" @click="emit('close')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="18" y1="6" x2="6" y2="18" />
@@ -99,16 +97,14 @@ function getColor(id) {
 
                 <!-- Успех -->
                 <div v-if="orderSuccess" class="cart-drawer__success">
-                    <span class="cart-drawer__success-icon">✓</span>
-                    <p>Заказ успешно оформлен!</p>
+                    <div class="cart-drawer__success-icon">&#x2713;</div>
+                    <h4>Заказ успешно оформлен</h4>
                     <p class="cart-drawer__success-sub">Мы свяжемся с вами в ближайшее время</p>
                 </div>
 
                 <!-- Пустая корзина -->
                 <div v-else-if="items.length === 0" class="cart-drawer__empty">
-                    <span class="cart-drawer__empty-icon">🛒</span>
                     <p>Корзина пуста</p>
-                    <p class="cart-drawer__empty-sub">Добавьте товары из каталога</p>
                 </div>
 
                 <!-- Содержимое -->
@@ -116,32 +112,33 @@ function getColor(id) {
                     <!-- Форма заказа -->
                     <div v-if="showOrderForm" class="cart-drawer__form-wrap">
                         <form class="cart-drawer__form" @submit.prevent="submitOrder">
+                            <h4 class="cart-drawer__form-title">Оформление заказа</h4>
+
                             <div class="cart-drawer__field">
                                 <label>Ваше имя *</label>
-                                <input v-model="form.customer_name" type="text" required placeholder="Имя" />
+                                <input v-model="form.customer_name" type="text" required placeholder="Анна" />
                             </div>
                             <div class="cart-drawer__field">
-                                <label>Телефон *</label>
-                                <input v-model="form.customer_phone" type="tel" required placeholder="+7 (999) 123-45-67" />
+                                <label>Телефон заказчика *</label>
+                                <input v-model="form.customer_phone" type="tel" required placeholder="+7 900 000-00-00" />
                             </div>
                             <div class="cart-drawer__field">
                                 <label>Адрес доставки *</label>
-                                <textarea v-model="form.address" rows="2" required placeholder="Город, улица, дом, квартира" />
+                                <input v-model="form.address" type="text" required placeholder="ул. Тёмная, д. 13" />
                             </div>
                             <div class="cart-drawer__field">
-                                <label>Комментарий</label>
-                                <textarea v-model="form.comment" rows="2" maxlength="500" placeholder="Пожелания к заказу..." />
+                                <label>Комментарий к заказу</label>
+                                <textarea v-model="form.comment" rows="1" placeholder="Добавить открытку, особые пожелания..." @input="e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px' }"></textarea>
                             </div>
-
                             <div class="cart-drawer__form-total">
-                                <span>Итого:</span>
-                                <strong>{{ totalPrice.toLocaleString('ru-RU') }} ₽</strong>
+                                <span>Итого к оплате</span>
+                                <strong>{{ totalPrice.toLocaleString('ru-RU') }} &#8381;</strong>
                             </div>
 
-                            <button type="submit" class="btn btn--primary btn--full" :disabled="isSubmitting">
+                            <button type="submit" class="cart-drawer__checkout-btn" :disabled="isSubmitting">
                                 {{ isSubmitting ? 'Отправка...' : 'Подтвердить заказ' }}
                             </button>
-                            <button type="button" class="btn btn--secondary btn--full" @click="showOrderForm = false" style="margin-top: 8px">
+                            <button type="button" class="cart-drawer__back-btn" @click="showOrderForm = false">
                                 Назад
                             </button>
                         </form>
@@ -149,40 +146,31 @@ function getColor(id) {
 
                     <!-- Список товаров -->
                     <div v-else class="cart-drawer__items">
-                        <div v-for="item in items" :key="item.id" class="cart-item">
-                            <div class="cart-item__image">
+                        <div v-for="item in items" :key="item.id" class="cart-line">
+                            <div class="cart-line__thumb">
                                 <img v-if="item.image" :src="`/storage/${item.image}`" :alt="item.name" />
-                                <div v-else class="cart-item__placeholder" :style="{ backgroundColor: getColor(item.id) }">
-                                    <span>🌸</span>
-                                </div>
+                                <div v-else class="cart-line__thumb-bg" :style="{ background: getGradient(item.id) }"></div>
                             </div>
-                            <div class="cart-item__info">
-                                <span class="cart-item__name">{{ item.name }}</span>
-                                <span class="cart-item__price">{{ (item.price * item.quantity).toLocaleString('ru-RU') }} ₽</span>
+                            <div class="cart-line__info">
+                                <div class="cart-line__name">{{ item.name }}</div>
+                                <span class="cart-line__price">{{ (item.price * item.quantity).toLocaleString('ru-RU') }} &#8381;</span>
                             </div>
-                            <div class="cart-item__controls">
-                                <div class="cart-item__counter">
-                                    <button @click="decrementItem(item.id)">−</button>
-                                    <span>{{ item.quantity }}</span>
-                                    <button @click="incrementItem(item.id)">+</button>
-                                </div>
-                                <button class="cart-item__remove" @click="removeItem(item.id)" aria-label="Удалить">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polyline points="3 6 5 6 21 6"/>
-                                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                                    </svg>
-                                </button>
+                            <div class="cart-line__qty">
+                                <button @click="decrementItem(item.id)">-</button>
+                                <span>{{ item.quantity }}</span>
+                                <button @click="incrementItem(item.id)">+</button>
                             </div>
+                            <span class="cart-line__remove" @click="removeItem(item.id)">&#x2715;</span>
                         </div>
                     </div>
 
-                    <!-- Итого и кнопка -->
+                    <!-- Итого -->
                     <div v-if="!showOrderForm" class="cart-drawer__footer">
                         <div class="cart-drawer__total">
-                            <span>Итого:</span>
-                            <strong>{{ totalPrice.toLocaleString('ru-RU') }} ₽</strong>
+                            <span>Итого</span>
+                            <strong>{{ totalPrice.toLocaleString('ru-RU') }} &#8381;</strong>
                         </div>
-                        <button class="btn btn--primary btn--full" @click="openOrderForm">
+                        <button class="cart-drawer__checkout-btn" @click="openOrderForm">
                             Оформить заказ
                         </button>
                     </div>
@@ -193,10 +181,12 @@ function getColor(id) {
 </template>
 
 <style lang="scss">
-$color-primary: #2d4a2d;
-$color-accent: #c4a0a0;
-$color-white: #ffffff;
-$color-bg: #fafafa;
+$parchment: #f4ead9;
+$parchment-dim: #e9dcc4;
+$ink: #1c1114;
+$night: #150d10;
+$wine: #7a1220;
+$gold: #c9a15a;
 
 .cart-drawer {
     position: fixed;
@@ -206,20 +196,22 @@ $color-bg: #fafafa;
     &__overlay {
         position: absolute;
         inset: 0;
-        background: rgba(0, 0, 0, 0.45);
+        background: rgba(0, 0, 0, 0.5);
     }
 
     &__panel {
         position: absolute;
         top: 0;
         right: 0;
-        width: 420px;
+        width: 380px;
         max-width: 100%;
         height: 100%;
-        background: $color-white;
+        background: $parchment;
+        border-radius: 14px 0 0 14px;
         display: flex;
         flex-direction: column;
-        box-shadow: -4px 0 30px rgba(0, 0, 0, 0.12);
+        box-shadow: -4px 0 30px rgba(0, 0, 0, 0.2);
+        color: $ink;
     }
 
     &__header {
@@ -227,24 +219,19 @@ $color-bg: #fafafa;
         align-items: center;
         justify-content: space-between;
         padding: 20px 24px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #e4d6bd;
     }
 
     &__title {
-        font-size: 18px;
-        font-weight: 700;
-        color: #2c2c2c;
-    }
-
-    &__count {
-        font-weight: 400;
-        color: #999;
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 24px;
+        color: $ink;
     }
 
     &__close {
-        color: #999;
+        color: #8a7c70;
         transition: color 0.3s ease;
-        &:hover { color: #333; }
+        &:hover { color: $ink; }
     }
 
     &__empty, &__success {
@@ -254,47 +241,91 @@ $color-bg: #fafafa;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        color: #999;
-
-        p { font-size: 16px; font-weight: 500; }
-        &-sub { font-size: 13px; color: #bbb; }
-        &-icon { font-size: 48px; margin-bottom: 8px; }
+        color: #6b5f56;
+        text-align: center;
+        padding: 24px;
     }
 
     &__success-icon {
-        width: 56px;
-        height: 56px;
-        background: $color-primary;
-        color: $color-white;
+        width: 64px;
+        height: 64px;
         border-radius: 50%;
+        background: $wine;
+        color: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
-        margin-bottom: 8px;
+        font-size: 30px;
+        margin-bottom: 16px;
+    }
+
+    &__success-sub {
+        font-size: 13px;
+        color: #6b5f56;
     }
 
     &__items {
         flex: 1;
         overflow-y: auto;
-        padding: 16px 24px;
+        padding: 12px 24px;
     }
 
     &__footer {
         padding: 20px 24px;
-        border-top: 1px solid #eee;
+        border-top: 1px solid #e4d6bd;
     }
 
     &__total, &__form-total {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 16px;
-        font-size: 16px;
+        margin-bottom: 18px;
+        font-weight: 600;
 
         strong {
-            font-size: 20px;
-            color: $color-primary;
+            font-size: 18px;
+            color: $wine;
+        }
+    }
+
+    &__checkout-btn {
+        width: 100%;
+        background: $wine;
+        color: #fff;
+        border: none;
+        padding: 14px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+
+        &:hover {
+            background: lighten($wine, 5%);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+
+    &__back-btn {
+        width: 100%;
+        margin-top: 10px;
+        background: transparent;
+        border: 1px solid $gold;
+        color: $wine;
+        padding: 12px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background: $gold;
+            color: $night;
         }
     }
 
@@ -308,7 +339,13 @@ $color-bg: #fafafa;
     &__form {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 12px;
+    }
+
+    &__form-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 24px;
+        margin-bottom: 4px;
     }
 
     &__field {
@@ -318,38 +355,44 @@ $color-bg: #fafafa;
 
         label {
             font-size: 12px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #777;
+            color: #6b5f56;
         }
 
         input, textarea {
-            padding: 10px 14px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d8c7a8;
+            border-radius: 8px;
+            font-family: 'Work Sans', sans-serif;
             font-size: 14px;
+            background: #fff;
             transition: border-color 0.3s ease;
 
             &:focus {
-                border-color: $color-primary;
+                border-color: $wine;
             }
         }
+
+        textarea {
+            resize: none;
+            overflow: hidden;
+        }
     }
+
 }
 
 // Элемент корзины
-.cart-item {
+.cart-line {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 12px 0;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #e4d6bd;
 
-    &__image {
-        width: 56px;
-        height: 56px;
-        border-radius: 6px;
+    &__thumb {
+        width: 52px;
+        height: 52px;
+        border-radius: 8px;
         overflow: hidden;
         flex-shrink: 0;
 
@@ -358,15 +401,11 @@ $color-bg: #fafafa;
             height: 100%;
             object-fit: cover;
         }
-    }
 
-    &__placeholder {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
+        &-bg {
+            width: 100%;
+            height: 100%;
+        }
     }
 
     &__info {
@@ -375,63 +414,61 @@ $color-bg: #fafafa;
     }
 
     &__name {
-        display: block;
         font-size: 14px;
         font-weight: 500;
-        color: #2c2c2c;
+        color: $ink;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
     &__price {
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 600;
-        color: $color-primary;
+        color: $wine;
     }
 
-    &__controls {
+    &__qty {
         display: flex;
         align-items: center;
         gap: 8px;
-        flex-shrink: 0;
-    }
-
-    &__counter {
-        display: flex;
-        align-items: center;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        overflow: hidden;
 
         button {
-            width: 28px;
-            height: 28px;
-            font-size: 14px;
-            font-weight: 600;
-            color: $color-primary;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid #d8c7a8;
+            background: #fff;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s ease;
+            font-size: 12px;
+            transition: all 0.2s ease;
 
             &:hover {
-                background: #f5f5f5;
+                border-color: $wine;
+                color: $wine;
             }
         }
 
         span {
-            width: 24px;
-            text-align: center;
             font-size: 13px;
             font-weight: 600;
+            min-width: 16px;
+            text-align: center;
         }
     }
 
     &__remove {
-        color: #ccc;
+        cursor: pointer;
+        color: #8a7c70;
+        font-size: 14px;
         transition: color 0.3s ease;
-        &:hover { color: #e74c3c; }
+
+        &:hover {
+            color: $wine;
+        }
     }
 }
 

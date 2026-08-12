@@ -9,7 +9,6 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'open-cart']);
 
-// Блокируем скролл страницы при открытом меню
 watch(() => props.isOpen, (val) => {
     document.body.style.overflow = val ? 'hidden' : '';
 });
@@ -41,11 +40,6 @@ watch(() => props.isOpen, (val) => {
                         </svg>
                         Корзина
                     </button>
-
-                    <div class="burger-menu__contacts">
-                        <a href="tel:+79991234567" class="burger-menu__contact">+7 (999) 123-45-67</a>
-                        <a href="mailto:info@vedma.ru" class="burger-menu__contact">info@vedma.ru</a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -53,9 +47,11 @@ watch(() => props.isOpen, (val) => {
 </template>
 
 <style lang="scss">
-$color-primary: #2d4a2d;
-$color-accent: #c4a0a0;
-$color-white: #ffffff;
+$night: #150d10;
+$parchment: #f4ead9;
+$parchment-dim: #e9dcc4;
+$gold: #c9a15a;
+$wine: #7a1220;
 
 .burger-menu {
     position: fixed;
@@ -68,11 +64,8 @@ $color-white: #ffffff;
 
     &__overlay {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.4);
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
     }
 
     &__content {
@@ -81,12 +74,12 @@ $color-white: #ffffff;
         left: 0;
         width: 280px;
         height: 100%;
-        background: $color-white;
+        background: $night;
         padding: 88px 24px 32px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
         overflow-y: auto;
     }
 
@@ -99,35 +92,32 @@ $color-white: #ffffff;
         display: block;
         padding: 16px 0;
         font-size: 14px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: $color-primary;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        font-weight: 400;
+        letter-spacing: 0.03em;
+        color: $parchment-dim;
+        border-bottom: 1px solid #33232a;
         transition: color 0.3s ease;
-        text-align: left;
-        width: 100%;
 
         &:hover {
-            color: $color-accent;
+            color: $gold;
         }
     }
 
-    &__contacts {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin-top: auto;
+    &__bottom {
         padding-top: 24px;
     }
 
-    &__contact {
-        font-size: 12px;
-        color: #777;
+    &__cart-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: $gold;
+        font-size: 14px;
+        font-weight: 500;
         transition: color 0.3s ease;
 
         &:hover {
-            color: $color-primary;
+            color: $parchment;
         }
     }
 }

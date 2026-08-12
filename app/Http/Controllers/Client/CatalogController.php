@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,11 +11,7 @@ class CatalogController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with('category');
-
-        if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
-        }
+        $query = Product::query();
 
         if ($request->filled('min_price')) {
             $query->where('price', '>=', $request->min_price);
@@ -35,14 +30,13 @@ class CatalogController extends Controller
 
         return Inertia::render('Catalog', [
             'products' => $query->get(),
-            'categories' => Category::orderBy('sort_order')->get(),
-            'filters' => $request->only(['category', 'sort', 'min_price', 'max_price']),
+            'filters' => $request->only(['sort', 'min_price', 'max_price']),
         ]);
     }
 
     public function show(string $slug)
     {
-        $product = Product::where('slug', $slug)->with('category')->firstOrFail();
+        $product = Product::where('slug', $slug)->firstOrFail();
 
         return Inertia::render('ProductDetail', [
             'product' => $product,

@@ -4,6 +4,7 @@ use App\Http\Controllers\Client\MainController;
 use App\Http\Controllers\Client\CatalogController;
 use App\Http\Controllers\Client\GalleryController;
 use App\Http\Controllers\Client\OrderController;
+use App\Http\Controllers\Client\SitemapController;
 use Illuminate\Support\Facades\Route;
 
 // Клиентские маршруты
@@ -14,3 +15,6 @@ Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
 
 // API заказа
 Route::post('/order', [OrderController::class, 'store'])->name('order.store');
+
+// SEO
+Route::get('/sitemap.xml', [SitemapController::class, 'index']);

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { useCart } from '@/stores/cart';
 
 const props = defineProps({
@@ -32,37 +32,35 @@ function prevImage() {
     currentImageIndex.value = (currentImageIndex.value - 1 + images.value.length) % images.value.length;
 }
 
-const placeholderColors = ['#e8ddd5', '#d5dde8', '#dde8d5', '#e8d5dd', '#d5e8dd', '#e0d8e8'];
-function getColor(i) {
-    return placeholderColors[(props.product.id + i) % placeholderColors.length];
+const gradients = [
+    'linear-gradient(135deg, #7a1220, #6b4c82)',
+    'linear-gradient(135deg, #4f0a12, #c9a15a)',
+    'linear-gradient(135deg, #6b4c82, #7a1220)',
+    'linear-gradient(135deg, #c9a15a, #4f0a12)',
+];
+
+function getGradient(i) {
+    return gradients[(props.product.id + i) % gradients.length];
 }
 </script>
 
 <template>
+    <Head>
+        <title>{{ product.name }} — купить в Таганроге | Ведьмина метла</title>
+        <meta name="description" :content="`${product.name} — ${product.description || 'букет из свежих цветов'}. Купить с доставкой по Таганрогу в салоне Ведьмина метла.`" />
+    </Head>
     <div class="product-detail section">
         <div class="container">
-            <div class="product-detail__breadcrumbs">
-                <Link href="/">Главная</Link>
-                <span>/</span>
-                <Link href="/catalog">Каталог</Link>
-                <span>/</span>
-                <span class="--current">{{ product.name }}</span>
-            </div>
-
             <div class="product-detail__content">
                 <!-- Галерея -->
                 <div class="product-detail__gallery">
                     <div class="product-detail__main-image">
-                        <!-- Заглушка — всегда под картинкой, видна пока грузится или при ошибке -->
                         <div
                             class="product-detail__image-placeholder"
-                            :style="{ backgroundColor: getColor(currentImageIndex) }"
+                            :style="{ background: getGradient(currentImageIndex) }"
                             :class="{ '--hidden': mainLoaded && !mainError }"
-                        >
-                            <span>🌸</span>
-                        </div>
+                        ></div>
 
-                        <!-- Реальное фото -->
                         <img
                             v-if="images.length && !mainError"
                             :key="currentImageIndex"
@@ -74,63 +72,50 @@ function getColor(i) {
                             @error="mainError = true"
                         />
 
-                        <!-- Стрелки -->
                         <button
                             v-if="images.length > 1"
                             class="product-detail__arrow --prev"
                             @click="prevImage"
-                        >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="15 18 9 12 15 6"/>
-                            </svg>
-                        </button>
+                        >&lsaquo;</button>
                         <button
                             v-if="images.length > 1"
                             class="product-detail__arrow --next"
                             @click="nextImage"
-                        >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="9 18 15 12 9 6"/>
-                            </svg>
-                        </button>
+                        >&rsaquo;</button>
                     </div>
 
-                    <!-- Превью-миниатюры -->
                     <div class="product-detail__thumbs" v-if="images.length > 1">
-                        <button
+                        <div
                             v-for="(img, i) in images"
                             :key="i"
                             class="product-detail__thumb"
                             :class="{ '--active': i === currentImageIndex }"
                             @click="currentImageIndex = i"
                         >
-                            <div class="product-detail__thumb-placeholder" :style="{ backgroundColor: getColor(i) }">
-                                <span>🌸</span>
-                            </div>
+                            <div class="product-detail__thumb-bg" :style="{ background: getGradient(i) }"></div>
                             <img
                                 :src="`/storage/${img}`"
                                 :alt="`Фото ${i + 1}`"
                                 @load="$event.target.classList.add('--loaded')"
                                 @error="$event.target.style.display = 'none'"
                             />
-                        </button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Информация -->
                 <div class="product-detail__info">
-                    <span class="product-detail__category">{{ product.category?.name }}</span>
-                    <h1 class="product-detail__name">{{ product.name }}</h1>
-                    <p class="product-detail__price">{{ Number(product.price).toLocaleString('ru-RU') }} ₽</p>
+                    <h2 class="product-detail__name">{{ product.name }}</h2>
+                    <span class="product-detail__price">{{ Number(product.price).toLocaleString('ru-RU') }} &#8381;</span>
 
                     <div class="product-detail__block" v-if="product.composition">
-                        <h3 class="product-detail__block-title">Состав</h3>
-                        <p class="product-detail__composition">{{ product.composition }}</p>
+                        <h6 class="product-detail__block-title">Состав</h6>
+                        <p class="product-detail__text">{{ product.composition }}</p>
                     </div>
 
                     <div class="product-detail__block" v-if="product.description">
-                        <h3 class="product-detail__block-title">Описание</h3>
-                        <p class="product-detail__description">{{ product.description }}</p>
+                        <h6 class="product-detail__block-title">Описание</h6>
+                        <p class="product-detail__text">{{ product.description }}</p>
                     </div>
 
                     <div class="product-detail__actions">
@@ -143,7 +128,7 @@ function getColor(i) {
                         </button>
                         <div v-else class="product-detail__cart-control">
                             <div class="product-detail__counter">
-                                <button class="product-detail__counter-btn" @click="decrementItem(product.id)">−</button>
+                                <button class="product-detail__counter-btn" @click="decrementItem(product.id)">-</button>
                                 <span class="product-detail__counter-value">{{ quantity }}</span>
                                 <button class="product-detail__counter-btn" @click="addItem(product)">+</button>
                             </div>
@@ -157,40 +142,32 @@ function getColor(i) {
 </template>
 
 <style lang="scss">
-$color-primary: #2d4a2d;
-$color-accent: #c4a0a0;
-$color-white: #ffffff;
+$parchment: #f4ead9;
+$ink: #1c1114;
+$wine: #7a1220;
+$gold: #c9a15a;
 
 .product-detail {
-    &__breadcrumbs {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 32px;
-        font-size: 13px;
-        color: #999;
+    background: $parchment;
+    padding: 50px 40px 60px;
+    color: $ink;
+    flex: 1;
 
-        a {
-            transition: color 0.3s ease;
-            &:hover { color: $color-primary; }
-        }
-
-        .--current {
-            color: #333;
-        }
+    @media (max-width: 768px) {
+        padding: 32px 16px;
     }
 
     &__content {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: clamp(24px, 4vw, 60px);
+        display: flex;
+        gap: 40px;
 
         @media (max-width: 768px) {
-            grid-template-columns: 1fr;
+            flex-direction: column;
         }
     }
 
     &__gallery {
+        flex: 1;
         display: flex;
         flex-direction: column;
         gap: 12px;
@@ -198,19 +175,14 @@ $color-white: #ffffff;
 
     &__main-image {
         position: relative;
-        border-radius: 8px;
+        border-radius: 14px;
         overflow: hidden;
-        aspect-ratio: 1;
+        aspect-ratio: 3 / 4;
     }
 
     &__image-placeholder {
         position: absolute;
         inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 72px;
-        opacity: 0.6;
         transition: opacity 0.4s ease;
         z-index: 1;
 
@@ -226,7 +198,6 @@ $color-white: #ffffff;
         width: 100%;
         height: 100%;
         object-fit: cover;
-        display: block;
         opacity: 0;
         transition: opacity 0.4s ease;
         z-index: 2;
@@ -240,40 +211,33 @@ $color-white: #ffffff;
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba($color-white, 0.85);
-        border-radius: 50%;
-        color: #333;
-        transition: all 0.3s ease;
+        font-size: 26px;
+        color: #fff;
         z-index: 3;
+        padding: 8px 16px;
+        transition: opacity 0.3s ease;
 
         &:hover {
-            background: $color-white;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            opacity: 0.7;
         }
 
-        &.--prev { left: 12px; }
-        &.--next { right: 12px; }
+        &.--prev { left: 0; }
+        &.--next { right: 0; }
     }
 
     &__thumbs {
         display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
+        gap: 10px;
     }
 
     &__thumb {
-        width: 64px;
-        height: 64px;
-        border-radius: 6px;
+        width: 56px;
+        height: 56px;
+        border-radius: 8px;
         overflow: hidden;
         position: relative;
-        opacity: 0.5;
-        border: 2px solid transparent;
+        opacity: 0.6;
+        cursor: pointer;
         transition: all 0.3s ease;
 
         img {
@@ -291,9 +255,15 @@ $color-white: #ffffff;
             }
         }
 
+        &-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
         &.--active {
             opacity: 1;
-            border-color: $color-primary;
+            outline: 2px solid $gold;
         }
 
         &:hover {
@@ -301,65 +271,45 @@ $color-white: #ffffff;
         }
     }
 
-    &__thumb-placeholder {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        z-index: 1;
-    }
-
     &__info {
-        padding-top: 8px;
-    }
-
-    &__category {
-        display: inline-block;
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: #999;
-        margin-bottom: 8px;
+        flex: 1;
     }
 
     &__name {
-        font-size: clamp(24px, 3vw, 36px);
-        font-weight: 700;
-        color: #2c2c2c;
-        margin-bottom: 12px;
+        font-size: 32px;
+        margin-bottom: 10px;
+        color: $ink;
     }
 
     &__price {
-        font-size: 28px;
-        font-weight: 700;
-        color: $color-primary;
-        margin-bottom: 28px;
+        font-size: 24px;
+        font-weight: 600;
+        display: block;
+        margin-bottom: 18px;
+        color: $wine;
     }
 
     &__block {
-        margin-bottom: 20px;
+        margin-bottom: 16px;
     }
 
     &__block-title {
+        font-family: 'Work Sans', sans-serif;
         font-size: 13px;
-        font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #999;
-        margin-bottom: 8px;
+        letter-spacing: 0.05em;
+        color: #8a7c70;
+        margin: 18px 0 6px;
     }
 
-    &__composition, &__description {
-        font-size: 15px;
-        line-height: 1.7;
-        color: #555;
+    &__text {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #4d423a;
     }
 
     &__actions {
-        margin-top: 32px;
+        margin-top: 20px;
     }
 
     &__cart-control {
@@ -371,8 +321,8 @@ $color-white: #ffffff;
     &__counter {
         display: flex;
         align-items: center;
-        border: 2px solid $color-primary;
-        border-radius: 4px;
+        border: 2px solid $wine;
+        border-radius: 30px;
         overflow: hidden;
     }
 
@@ -381,15 +331,15 @@ $color-white: #ffffff;
         height: 44px;
         font-size: 20px;
         font-weight: 600;
-        color: $color-primary;
+        color: $wine;
         display: flex;
         align-items: center;
         justify-content: center;
         transition: all 0.2s ease;
 
         &:hover {
-            background: $color-primary;
-            color: $color-white;
+            background: $wine;
+            color: #fff;
         }
     }
 
@@ -398,13 +348,13 @@ $color-white: #ffffff;
         text-align: center;
         font-size: 18px;
         font-weight: 600;
-        color: $color-primary;
+        color: $wine;
     }
 
     &__in-cart {
         font-size: 14px;
         font-weight: 500;
-        color: $color-accent;
+        color: $gold;
     }
 }
 </style>

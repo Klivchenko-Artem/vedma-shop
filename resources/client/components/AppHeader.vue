@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { useCart } from '@/stores/cart';
 import BurgerMenu from '@/components/BurgerMenu.vue';
+import logoWide from '@/assets/images/logo-wide.png';
 
 const emit = defineEmits(['open-cart']);
 const { totalCount } = useCart();
@@ -30,7 +31,6 @@ const rightLinks = [
 <template>
     <header class="header">
         <div class="header__inner">
-            <!-- Навигация слева -->
             <nav class="header__nav --left">
                 <Link
                     v-for="link in leftLinks"
@@ -42,7 +42,6 @@ const rightLinks = [
                 </Link>
             </nav>
 
-            <!-- Бургер (только мобилка, занимает место лев. навигации) -->
             <button
                 class="header__burger"
                 :class="{ '--active': isBurgerOpen }"
@@ -54,13 +53,10 @@ const rightLinks = [
                 <span></span>
             </button>
 
-            <!-- Логотип (по центру) -->
             <Link href="/" class="header__logo">
-                <span class="header__logo-icon">🌿</span>
-                <span class="header__logo-text">Ведьмина метла</span>
+                <img :src="logoWide" alt="Ведьмина метла" class="header__logo-img" />
             </Link>
 
-            <!-- Навигация справа -->
             <nav class="header__nav --right">
                 <Link
                     v-for="link in rightLinks"
@@ -73,7 +69,6 @@ const rightLinks = [
             </nav>
         </div>
 
-        <!-- Корзина — абсолютно поверх, не влияет на грид -->
         <button class="header__cart" @click="emit('open-cart')" aria-label="Корзина">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
@@ -83,7 +78,6 @@ const rightLinks = [
             <span v-if="totalCount > 0" class="header__cart-badge">{{ totalCount }}</span>
         </button>
 
-        <!-- Мобильное бургер-меню -->
         <BurgerMenu
             :is-open="isBurgerOpen"
             :links="navLinks"
@@ -94,10 +88,9 @@ const rightLinks = [
 </template>
 
 <style lang="scss">
-$color-primary: #2d4a2d;
-$color-accent: #c4a0a0;
-$color-bg: #fafafa;
-$color-white: #ffffff;
+$night: #150d10;
+$parchment-dim: #e9dcc4;
+$gold: #c9a15a;
 
 .header {
     position: fixed;
@@ -105,15 +98,14 @@ $color-white: #ffffff;
     left: 0;
     right: 0;
     z-index: 100;
-    background: rgba($color-white, 0.95);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    background: $night;
+    border-bottom: 1px solid #33232a;
 
     &__inner {
         display: grid;
         grid-template-columns: 1fr auto 1fr;
         align-items: center;
-        max-width: 1280px;
+        max-width: 1100px;
         margin: 0 auto;
         padding: 0 clamp(16px, 3vw, 40px);
         height: 72px;
@@ -123,7 +115,6 @@ $color-white: #ffffff;
         }
     }
 
-    // Бургер — только мобилка
     &__burger {
         display: none;
         flex-direction: column;
@@ -139,7 +130,7 @@ $color-white: #ffffff;
             display: block;
             width: 100%;
             height: 2px;
-            background: $color-primary;
+            background: $parchment-dim;
             border-radius: 1px;
             transition: all 0.3s ease;
         }
@@ -155,10 +146,9 @@ $color-white: #ffffff;
         }
     }
 
-    // Навигация — только десктоп
     &__nav {
         display: flex;
-        gap: clamp(16px, 2.5vw, 40px);
+        gap: clamp(16px, 2.5vw, 28px);
 
         &.--left {
             justify-content: flex-end;
@@ -174,11 +164,10 @@ $color-white: #ffffff;
     }
 
     &__link {
-        font-size: 12px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: $color-primary;
+        font-size: 18px;
+        font-weight: 400;
+        letter-spacing: 0.03em;
+        color: $parchment-dim;
         transition: color 0.3s ease;
         position: relative;
 
@@ -189,39 +178,28 @@ $color-white: #ffffff;
             left: 0;
             width: 0;
             height: 1px;
-            background: $color-accent;
+            background: $gold;
             transition: width 0.3s ease;
         }
 
         &:hover {
-            color: $color-accent;
+            color: $gold;
             &::after { width: 100%; }
         }
     }
 
-    // Логотип — всегда по центру
     &__logo {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        margin: 0 clamp(16px, 3vw, 60px);
-        white-space: nowrap;
+        margin: 0 clamp(16px, 3vw, 40px);
     }
 
-    &__logo-icon {
-        font-size: 22px;
+    &__logo-img {
+        height: 56px;
+        width: auto;
     }
 
-    &__logo-text {
-        font-size: clamp(14px, 2vw, 18px);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        color: $color-primary;
-    }
-
-    // Корзина — поверх хедера, не ломает грид
     &__cart {
         position: absolute;
         top: 50%;
@@ -229,27 +207,27 @@ $color-white: #ffffff;
         transform: translateY(-50%);
         display: flex;
         align-items: center;
-        color: $color-primary;
+        color: $parchment-dim;
         transition: color 0.3s ease;
         z-index: 101;
 
         &:hover {
-            color: $color-accent;
+            color: $gold;
         }
     }
 
     &__cart-badge {
         position: absolute;
-        top: -6px;
-        right: -8px;
-        min-width: 18px;
-        height: 18px;
-        padding: 0 5px;
+        top: -8px;
+        right: -10px;
+        min-width: 16px;
+        height: 16px;
+        padding: 0 4px;
         font-size: 10px;
-        font-weight: 700;
-        color: $color-white;
-        background: $color-accent;
-        border-radius: 9px;
+        font-weight: 600;
+        color: #fff;
+        background: #7a1220;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;

@@ -24,9 +24,14 @@ const firstImage = computed(() => {
     return img ? `/storage/${img}` : null;
 });
 
-const placeholderColor = computed(() => {
-    const colors = ['#e8ddd5', '#d5dde8', '#dde8d5', '#e8d5dd', '#d5e8dd', '#e0d8e8'];
-    return colors[props.product.id % colors.length];
+const placeholderGradient = computed(() => {
+    const gradients = [
+        'linear-gradient(135deg, #7a1220, #6b4c82)',
+        'linear-gradient(135deg, #4f0a12, #c9a15a)',
+        'linear-gradient(135deg, #6b4c82, #7a1220)',
+        'linear-gradient(135deg, #c9a15a, #4f0a12)',
+    ];
+    return gradients[props.product.id % gradients.length];
 });
 </script>
 
@@ -36,10 +41,10 @@ const placeholderColor = computed(() => {
             <div class="product-card__image">
                 <div
                     class="product-card__placeholder"
-                    :style="{ backgroundColor: placeholderColor }"
+                    :style="{ background: placeholderGradient }"
                     :class="{ '--hidden': imgLoaded && !imgError }"
                 >
-                    <span>🌸</span>
+                    <span>&#x1F490;</span>
                 </div>
                 <img
                     v-if="firstImage && !imgError"
@@ -54,12 +59,11 @@ const placeholderColor = computed(() => {
         </Link>
 
         <div class="product-card__info">
-            <span class="product-card__category">{{ product.category?.name }}</span>
             <Link :href="`/catalog/${product.slug}`" class="product-card__name">
                 {{ product.name }}
             </Link>
             <div class="product-card__bottom">
-                <span class="product-card__price">{{ Number(product.price).toLocaleString('ru-RU') }} ₽</span>
+                <span class="product-card__price">{{ Number(product.price).toLocaleString('ru-RU') }} &#8381;</span>
 
                 <button
                     v-if="quantity === 0"
@@ -69,7 +73,7 @@ const placeholderColor = computed(() => {
                     В корзину
                 </button>
                 <div v-else class="product-card__counter">
-                    <button class="product-card__counter-btn" @click="decrementItem(product.id)">−</button>
+                    <button class="product-card__counter-btn" @click="decrementItem(product.id)">-</button>
                     <span class="product-card__counter-value">{{ quantity }}</span>
                     <button class="product-card__counter-btn" @click="addItem(product)">+</button>
                 </div>
@@ -79,20 +83,21 @@ const placeholderColor = computed(() => {
 </template>
 
 <style lang="scss">
-$color-primary: #2d4a2d;
-$color-accent: #c4a0a0;
-$color-glow: rgba(45, 74, 45, 0.3);
-$color-white: #ffffff;
+$parchment: #f4ead9;
+$ink: #1c1114;
+$wine: #7a1220;
+$gold: #c9a15a;
 
 .product-card {
-    background: $color-white;
-    border-radius: 8px;
+    background: $parchment;
+    border-radius: 14px;
     overflow: hidden;
+    color: $ink;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 
     &:hover {
         transform: translateY(-4px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
     }
 
     &__image-wrap {
@@ -130,8 +135,7 @@ $color-white: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 48px;
-        opacity: 0.5;
+        font-size: 52px;
         transition: opacity 0.4s ease, transform 0.5s ease;
 
         &.--hidden {
@@ -147,26 +151,17 @@ $color-white: #ffffff;
         padding: 16px;
     }
 
-    &__category {
-        display: block;
-        font-size: 11px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: #999;
-        margin-bottom: 4px;
-    }
-
     &__name {
         display: block;
-        font-size: 16px;
-        font-weight: 600;
-        color: #2c2c2c;
-        margin-bottom: 12px;
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 19px;
+        font-weight: 700;
+        color: $ink;
+        margin-bottom: 8px;
         transition: color 0.3s ease;
 
         &:hover {
-            color: $color-primary;
+            color: $wine;
         }
     }
 
@@ -175,28 +170,25 @@ $color-white: #ffffff;
         align-items: center;
         justify-content: space-between;
         gap: 8px;
+        margin-top: 12px;
     }
 
     &__price {
-        font-size: 18px;
-        font-weight: 700;
-        color: $color-primary;
+        font-weight: 600;
+        color: $wine;
     }
 
     &__add-btn {
-        padding: 8px 16px;
+        background: $wine;
+        color: #fff;
+        padding: 8px 14px;
+        border-radius: 20px;
         font-size: 12px;
         font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: $color-white;
-        background: $color-primary;
-        border-radius: 4px;
         transition: all 0.3s ease;
 
         &:hover {
-            background: adjust-color($color-primary, $lightness: 8%);
-            box-shadow: 0 4px 16px $color-glow;
+            background: lighten($wine, 8%);
         }
     }
 
@@ -204,34 +196,34 @@ $color-white: #ffffff;
         display: flex;
         align-items: center;
         gap: 0;
-        border: 1px solid $color-primary;
-        border-radius: 4px;
+        border: 1px solid $wine;
+        border-radius: 20px;
         overflow: hidden;
     }
 
     &__counter-btn {
-        width: 32px;
-        height: 32px;
-        font-size: 16px;
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
         font-weight: 600;
-        color: $color-primary;
+        color: $wine;
         display: flex;
         align-items: center;
         justify-content: center;
         transition: all 0.2s ease;
 
         &:hover {
-            background: $color-primary;
-            color: $color-white;
+            background: $wine;
+            color: #fff;
         }
     }
 
     &__counter-value {
-        width: 28px;
+        width: 24px;
         text-align: center;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 600;
-        color: $color-primary;
+        color: $wine;
     }
 }
 </style>

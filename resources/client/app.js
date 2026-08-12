@@ -6,7 +6,7 @@ import AppLayout from '@/AppLayout.vue';
 createInertiaApp({
     progress: {
         delay: 0,
-        color: '#2d4a2d',
+        color: '#c9a15a',
     },
     resolve: async (name) => {
         const page = await resolvePageComponent(

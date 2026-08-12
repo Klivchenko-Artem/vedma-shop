@@ -27,13 +27,13 @@ class FooterSettings extends Page implements HasForms
 
     public function mount(): void
     {
-        $contacts = Setting::getValue('footer_contacts', [
+        $defaultContacts = [
             'phone' => '+7 (999) 123-45-67',
             'email' => 'info@vedma.ru',
             'address' => 'г. Москва, ул. Цветочная, 13',
-        ]);
+        ];
 
-        $socials = Setting::getValue('footer_socials', [
+        $defaultSocials = [
             'telegram_enabled' => true,
             'telegram_url' => '',
             'vk_enabled' => true,
@@ -42,7 +42,14 @@ class FooterSettings extends Page implements HasForms
             'instagram_url' => '',
             'whatsapp_enabled' => false,
             'whatsapp_url' => '',
-        ]);
+            'avito_enabled' => false,
+            'avito_url' => '',
+            'max_enabled' => false,
+            'max_url' => '',
+        ];
+
+        $contacts = array_merge($defaultContacts, Setting::getValue('footer_contacts', []));
+        $socials = array_merge($defaultSocials, Setting::getValue('footer_socials', []));
 
         $this->form->fill(array_merge($contacts, $socials));
     }
@@ -81,6 +88,14 @@ class FooterSettings extends Page implements HasForms
                         Toggle::make('whatsapp_enabled')->label('WhatsApp'),
                         TextInput::make('whatsapp_url')->label('Ссылка WhatsApp')->url()->placeholder('https://wa.me/...'),
                     ]),
+                    Grid::make(2)->schema([
+                        Toggle::make('avito_enabled')->label('Авито'),
+                        TextInput::make('avito_url')->label('Ссылка Авито')->url()->placeholder('https://avito.ru/...'),
+                    ]),
+                    Grid::make(2)->schema([
+                        Toggle::make('max_enabled')->label('Макс'),
+                        TextInput::make('max_url')->label('Ссылка Макс')->url()->placeholder('https://...'),
+                    ]),
                 ]),
             ])
             ->statePath('data');
@@ -105,6 +120,10 @@ class FooterSettings extends Page implements HasForms
             'instagram_url' => $state['instagram_url'] ?? '',
             'whatsapp_enabled' => $state['whatsapp_enabled'] ?? false,
             'whatsapp_url' => $state['whatsapp_url'] ?? '',
+            'avito_enabled' => $state['avito_enabled'] ?? false,
+            'avito_url' => $state['avito_url'] ?? '',
+            'max_enabled' => $state['max_enabled'] ?? false,
+            'max_url' => $state['max_url'] ?? '',
         ]);
 
         Notification::make()

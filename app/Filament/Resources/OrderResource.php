@@ -41,7 +41,7 @@ class OrderResource extends Resource
                         ->columnSpanFull(),
                     Forms\Components\Textarea::make('comment')
                         ->label('Комментарий')
-                        ->rows(3)
+                        ->autosize()
                         ->columnSpanFull(),
                 ])->columns(2),
 

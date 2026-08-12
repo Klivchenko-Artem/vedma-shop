@@ -24,12 +24,12 @@ class HandleInertiaRequests extends Middleware
             ],
             'appName' => config('app.name'),
             'footer' => fn () => [
-                'contacts' => Setting::getValue('footer_contacts', [
+                'contacts' => array_merge([
                     'phone' => '+7 (999) 123-45-67',
                     'email' => 'info@vedma.ru',
                     'address' => 'г. Москва, ул. Цветочная, 13',
-                ]),
-                'socials' => Setting::getValue('footer_socials', [
+                ], Setting::getValue('footer_contacts', [])),
+                'socials' => array_merge([
                     'telegram_enabled' => true,
                     'telegram_url' => '',
                     'vk_enabled' => true,
@@ -38,7 +38,11 @@ class HandleInertiaRequests extends Middleware
                     'instagram_url' => '',
                     'whatsapp_enabled' => false,
                     'whatsapp_url' => '',
-                ]),
+                    'avito_enabled' => false,
+                    'avito_url' => '',
+                    'max_enabled' => false,
+                    'max_url' => '',
+                ], Setting::getValue('footer_socials', [])),
             ],
         ]);
     }
