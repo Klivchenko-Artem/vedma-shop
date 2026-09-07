@@ -1,58 +1,116 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Ведьмина метла — интернет-магазин цветов
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[![tests](https://github.com/Klivchenko-Artem/vedma-shop/actions/workflows/tests.yml/badge.svg)](https://github.com/Klivchenko-Artem/vedma-shop/actions/workflows/tests.yml)
 
-## About Laravel
+Коммерческий проект для цветочного магазина в Таганроге. Сайт запущен и работает:
+**[witchs-broom-taganrog.ru](https://witchs-broom-taganrog.ru/)**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Сделан целиком одним разработчиком — от схемы базы данных и бэкенда до вёрстки,
+админки и деплоя на хостинг.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Стек
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Слой | Технологии |
+|---|---|
+| Бэкенд | PHP 8.3, Laravel 11 |
+| Фронтенд | Vue 3, Inertia.js, Tailwind CSS, Swiper |
+| Админка | Filament 3 |
+| База | MySQL 8 (в разработке — SQLite) |
+| Сборка | Vite |
+| Тесты | PHPUnit 11, 22 функциональных теста |
+| Запуск | Docker + docker compose |
 
-## Learning Laravel
+## Что умеет
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Витрина** — SPA на Vue 3 + Inertia без перезагрузок страниц:
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- главная с популярными товарами, отзывами и редактируемыми блоками;
+- каталог с фильтрацией по цене и сортировкой — фильтры считаются на сервере,
+  а не в браузере, поэтому работают на любом объёме товаров;
+- карточка товара с галереей и составом букета;
+- галерея работ;
+- корзина с сохранением в `localStorage` — не теряется при перезагрузке;
+- оформление заказа с серверной валидацией и очисткой пользовательского ввода.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+**Админка на Filament 3** — заказчик управляет магазином сам:
 
-## Agentic Development
+- товары, категории, заказы, отзывы, галерея;
+- редактируемые блоки главной страницы и футера (без правки кода);
+- загрузка изображений.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+**SEO** — генерация `sitemap.xml` и `robots.txt`, мета-теги страниц.
+
+## Запуск через Docker
+
+Нужен только Docker. Одна команда:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+docker compose up -d --build
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Дальше:
 
-## Contributing
+- сайт — http://localhost:8080
+- админка — http://localhost:8080/admin
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Миграции и тестовые данные накатываются автоматически при первом старте.
 
-## Code of Conduct
+## Запуск без Docker
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+npm run build
+php artisan serve
+```
 
-## Security Vulnerabilities
+## Тесты
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan test
+```
 
-## License
+22 функциональных теста на SQLite в памяти — рабочая база не затрагивается.
+Покрыты: главная страница, фильтры и сортировка каталога, карточка товара
+и 404, создание заказа со всеми правилами валидации, очистка HTML из
+комментария к заказу, доступ в админку, карта сайта.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Структура
+
+```
+app/
+  Filament/Resources/    — ресурсы админки
+  Http/Controllers/
+    Client/              — контроллеры витрины
+  Models/                — Product, Category, Order, Review, Gallery, Setting
+database/
+  migrations/            — схема базы
+  factories/             — фабрики для тестов
+  seeders/               — стартовые данные
+resources/
+  client/
+    pages/               — страницы Inertia (Home, Catalog, ProductDetail, Gallery)
+    components/          — переиспользуемые компоненты Vue
+docker/                  — nginx.conf и entrypoint контейнера
+tests/Feature/           — функциональные тесты
+```
+
+## Решения, которые стоит отметить
+
+**Inertia вместо отдельного API.** Витрина — полноценный SPA на Vue, но без
+написания и поддержки REST API: контроллер отдаёт пропсы прямо в компонент.
+Для магазина такого размера это экономит слой кода, не теряя интерактивности.
+
+**Фильтрация на стороне сервера.** Каталог фильтруется и сортируется запросом
+к базе, а не в браузере. Клиент получает готовую выборку — количество товаров
+может расти без переделки.
+
+**Настройки главной страницы в базе.** Тексты блоков лежат в таблице `settings`
+и правятся из админки, поэтому заказчик меняет содержимое сам, не обращаясь к
+разработчику.
+
+**Очистка пользовательского ввода.** Комментарий к заказу проходит через
+`strip_tags` — на это есть отдельный тест.
